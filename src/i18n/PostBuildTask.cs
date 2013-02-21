@@ -23,6 +23,8 @@ namespace i18n
         {
             if (inputPaths == null || inputPaths.Length == 0) inputPaths = new string[] { outputPath };
 
+            createLocaleDirectory(outputPath);
+
             var manifest = BuildProjectFileManifest(inputPaths);
 
             CreateMessageTemplate(outputPath, manifest, gettext);
@@ -30,6 +32,14 @@ namespace i18n
             MergeTemplateWithExistingLocales(outputPath, msgmerge);
 
             File.Delete(manifest);
+        }
+
+        /// <summary>
+        /// Create locale directory to ouput pot files
+        /// </summary>
+        private void createLocaleDirectory(string outputPath)
+        {
+            Directory.CreateDirectory(outputPath + @"\locale");
         }
 
         private static void MergeTemplateWithExistingLocales(string outputPath, string options)
