@@ -6,19 +6,14 @@ namespace i18n.PostBuild
     {
         static void Main(string[] args)
         {
-            string solutionPath;
+            if(args.Length == 0)
+            {
+                Console.WriteLine("This post build task requires passing in the $(ProjectDirectory) path");
+                return;
+            }
 
-            if (args.Length == 0)
-            {
-                //Si no ens indiquen res suposem que el directori del projecte està en el directori pare on s'està executant aquest programa
-                string currentPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                solutionPath = System.IO.Directory.GetParent(currentPath).FullName;
-            }
-            else
-            {
-                solutionPath = args[0];
-                solutionPath = solutionPath.Trim(new[] { '\"' });
-            }
+            var path = args[0];
+            path = path.Trim(new[] {'\"'});
 
             string gettext = null;
             string msgmerge = null;
@@ -34,7 +29,7 @@ namespace i18n.PostBuild
                     inputPaths = args[i].Substring(11).Split(',');
             }
 
-            new PostBuildTask().Execute(solutionPath, gettext, msgmerge, inputPaths);
+            new PostBuildTask().Execute(path, gettext, msgmerge, inputPaths);
         }
     }
 }
