@@ -93,7 +93,7 @@ namespace i18n
                 var culture = GetCultureInfoFromLanguage(language);
 
                 // Save cycles processing beyond the default; just return the original key
-                if (culture.TwoLetterISOLanguageName.Equals(DefaultSettings.DefaultTwoLetterISOLanguageName, StringComparison.OrdinalIgnoreCase))
+                if (culture.TwoLetterISOLanguageName.Equals(GetDefaultWebLanguageNameInTwoLetterISOFormat(), StringComparison.OrdinalIgnoreCase))
                 {
                     return key;
                 }
@@ -306,6 +306,39 @@ namespace i18n
         private static string GetCacheKey(string culture)
         {
             return string.Format("po:{0}", culture).ToLowerInvariant();
+        }
+
+        /// <summary>
+        /// Gets the Default Language of Web
+        /// </summary>
+        private static string GetDefaultWebLanguageNameInTwoLetterISOFormat()
+        {
+            if (HttpRuntime.Cache["DefaultWebLanguageInTwoLetterISOFormat"] == null)
+            {
+                //If Language is not set in Web.Config we get Language from DefaultSetting Class
+                HttpRuntime.Cache["DefaultWebLanguageInTwoLetterISOFormat"] = GetTwoLetterISOLanguageNameFromGlobalizationWebConfigSection() != string.Empty ? 
+                    GetTwoLetterISOLanguageNameFromGlobalizationWebConfigSection() : DefaultSettings.DefaultTwoLetterISOLanguageName;
+            }
+
+            return HttpRuntime.Cache["DefaultWebLanguageInTwoLetterISOFormat"].ToString();
+        }
+
+        /// <summary>
+        /// If the globalization section is defined in web.config reads the language in Culture attribute as Default Language for the web
+        /// </summary>
+        private static string GetTwoLetterISOLanguageNameFromGlobalizationWebConfigSection()
+        {
+            string twoLetterISOLanguageName = string.Empty;
+
+            System.Configuration.Configuration webConfig = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~/web.config");
+            System.Web.Configuration.GlobalizationSection globalizationSection = (System.Web.Configuration.GlobalizationSection)webConfig.GetSection("system.web/globalization");
+            
+            if (globalizationSection != null)
+            {
+                twoLetterISOLanguageName = globalizationSection.Culture.Length > 2 ? globalizationSection.Culture.Substring(0, 2) : string.Empty;
+            }
+
+            return twoLetterISOLanguageName;
         }
     }
 }
