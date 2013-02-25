@@ -26,7 +26,12 @@ namespace i18n
             foreach (var language in languages.Where(language => !string.IsNullOrWhiteSpace(language)))
             {
                 var culture = GetCultureInfoFromLanguage(language);
-                
+
+                if (culture.TwoLetterISOLanguageName.Equals(GetDefaultWebLanguageNameInTwoLetterISOFormat(), StringComparison.OrdinalIgnoreCase))
+                {
+                    return culture.IetfLanguageTag;
+                }
+
                 // en-US
                 var result = GetLanguageIfAvailable(culture.IetfLanguageTag);
                 if(result != null)
@@ -48,7 +53,7 @@ namespace i18n
                 }
             }
 
-            return DefaultSettings.DefaultTwoLetterISOLanguageName;
+            return GetTwoLetterISOLanguageNameFromGlobalizationWebConfigSection();
         }
 
         private static string GetLanguageIfAvailable(string culture)
