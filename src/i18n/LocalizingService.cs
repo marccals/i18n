@@ -23,6 +23,13 @@ namespace i18n
         /// <param name="languages">A sorted list of language preferences</param>
         public virtual string GetBestAvailableLanguageFrom(string[] languages)
         {
+            string defaultValue = GetTwoLetterISOLanguageNameFromGlobalizationWebConfigSection();
+
+            if (languages == null)
+            {
+                return defaultValue;
+            }
+
             foreach (var language in languages.Where(language => !string.IsNullOrWhiteSpace(language)))
             {
                 var culture = GetCultureInfoFromLanguage(language);
@@ -53,7 +60,7 @@ namespace i18n
                 }
             }
 
-            return GetTwoLetterISOLanguageNameFromGlobalizationWebConfigSection();
+            return defaultValue;
         }
 
         private static string GetLanguageIfAvailable(string culture)
