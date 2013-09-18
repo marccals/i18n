@@ -77,8 +77,6 @@ namespace i18n
                 // Attempt to load messages, and if failed (because PO file doesn't exist)
                 if (!LoadMessages(culture))
                 {
-                    // Avoid shredding the disk looking for non-existing files
-                    CreateEmptyMessages(culture);
                     return null;
                 }
 
@@ -136,29 +134,6 @@ namespace i18n
         private static string TryGetTextFor(string culture, string key)
         {
             return GetLanguageIfAvailable(culture) != null ? GetTextOrDefault(culture, key) : key;
-        }
-
-        private static void CreateEmptyMessages(string culture)
-        {
-            lock (Sync)
-            {
-                string directory;
-                string path;
-                GetDirectoryAndPath(culture, out directory, out path);
-
-                if (!Directory.Exists(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                }
-
-                using(var fs = File.CreateText(path))
-                {
-                    fs.Flush();
-                }
-
-                // If the file changes we want to be able to rebuild the index without recompiling
-                HttpRuntime.Cache.Insert(GetCacheKey(culture), new Dictionary<string, I18NMessage>(0), new CacheDependency(path));
-            }
         }
 
         private static bool LoadMessages(string culture)
