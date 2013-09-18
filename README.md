@@ -1,5 +1,5 @@
 # i18n
-## Smart internationalization for .NET web apps
+## Smart internationalization for .NET web apps (ready for languages with non-ascii characters)
 ```
     PM> Install-Package I18N
 ```
@@ -124,6 +124,16 @@ to `ILocalizingService`; here is what implementing `ILocalizing` on a `Controlle
             }
         }
     }
+```
+
+#### Default web's language
+
+If the default web's language is not english is necessary to define globalizacion section i web.config. For example:
+
+```xml
+     <system.web>
+        <globalization uiCulture="ca" culture="ca-ES" />  
+	 </system.web>
 ```
 
 #### Building PO databases
