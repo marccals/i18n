@@ -8,12 +8,14 @@ namespace i18n
     public class I18NSession
     {
         protected const string SessionKey = "po:language";
+        protected const string DefaultLanguageKey = "po:defaultLangauge";
 
-        public virtual void Set(HttpContextBase context, string language)
+        public virtual void Set(HttpContextBase context, string languageRequest, string defaultLanguageWeb = "ca")
         {
             if(context.Session != null)
             {
-                context.Session[SessionKey] = language;
+                context.Session[SessionKey] = languageRequest;
+                context.Session[DefaultLanguageKey] = defaultLanguageWeb;
             }
         }
 
@@ -29,6 +31,22 @@ namespace i18n
         {
             object val;
             return context.Session != null && (val = context.Session[SessionKey]) != null
+                       ? val.ToString()
+                       : null;
+        }
+
+        public static string GetDefaultLanguageWebFromSession(HttpContext context)
+        {
+            object val;
+            return context.Session != null && (val = context.Session[DefaultLanguageKey]) != null
+                       ? val.ToString()
+                       : null;
+        }
+
+        public static string GetDefaultLanguageWebFromSession(HttpContextBase context)
+        {
+            object val;
+            return context.Session != null && (val = context.Session[DefaultLanguageKey]) != null
                        ? val.ToString()
                        : null;
         }

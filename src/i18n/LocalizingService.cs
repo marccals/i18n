@@ -23,7 +23,7 @@ namespace i18n
         /// <param name="languages">A sorted list of language preferences</param>
         public virtual string GetBestAvailableLanguageFrom(string[] languages)
         {
-            string defaultValue = GetTwoLetterISOLanguageNameFromGlobalizationWebConfigSection();
+            string defaultValue = GetDefaultWebLanguageNameInTwoLetterISOFormat();
 
             if (languages == null)
             {
@@ -300,32 +300,7 @@ namespace i18n
         /// </summary>
         private static string GetDefaultWebLanguageNameInTwoLetterISOFormat()
         {
-            if (HttpRuntime.Cache["DefaultWebLanguageInTwoLetterISOFormat"] == null)
-            {
-                //If Language is not set in Web.Config we get Language from DefaultSetting Class
-                HttpRuntime.Cache["DefaultWebLanguageInTwoLetterISOFormat"] = GetTwoLetterISOLanguageNameFromGlobalizationWebConfigSection() != string.Empty ? 
-                    GetTwoLetterISOLanguageNameFromGlobalizationWebConfigSection() : DefaultSettings.DefaultTwoLetterISOLanguageName;
-            }
-
-            return HttpRuntime.Cache["DefaultWebLanguageInTwoLetterISOFormat"].ToString();
-        }
-
-        /// <summary>
-        /// If the globalization section is defined in web.config reads the language in Culture attribute as Default Language for the web
-        /// </summary>
-        private static string GetTwoLetterISOLanguageNameFromGlobalizationWebConfigSection()
-        {
-            string twoLetterISOLanguageName = string.Empty;
-
-            System.Configuration.Configuration webConfig = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~/web.config");
-            System.Web.Configuration.GlobalizationSection globalizationSection = (System.Web.Configuration.GlobalizationSection)webConfig.GetSection("system.web/globalization");
-            
-            if (globalizationSection != null)
-            {
-                twoLetterISOLanguageName = globalizationSection.Culture.Length > 2 ? globalizationSection.Culture.Substring(0, 2) : string.Empty;
-            }
-
-            return twoLetterISOLanguageName;
+            return I18NSession.GetDefaultLanguageWebFromSession(HttpContext.Current);
         }
     }
 }
